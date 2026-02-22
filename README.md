@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Repolens
 
-## Getting Started
+GitHub リポジトリの依存関係・脆弱性を分析する Web ダッシュボード。
 
-First, run the development server:
+## 機能
+
+- **依存関係分析** — パッケージの最新バージョンとの差分（major / minor / patch）、ライセンス表示、リスクスコア算出
+- **脆弱性検出** — npm advisory API によるセキュリティアドバイザリーの一覧表示
+- **AI サマリー**（準備中） — リポジトリ概要・依存関係の解説・技術的リスク評価を自動生成
+- **24 時間キャッシュ** — 同一リポジトリへの再アクセスは DB から即時返却
+
+## 技術スタック
+
+| 項目 | 選択 |
+|------|------|
+| Framework | Next.js App Router (TypeScript) |
+| UI | shadcn/ui + Tailwind CSS |
+| DB | Prisma + SQLite |
+| GitHub API | Octokit |
+| AI | Vercel AI SDK（プロバイダー未定） |
+
+## Next.js App Router の活用
+
+このプロジェクトは Next.js App Router の学習を目的としています。
+
+- **Server Components** — 全分析ページがサーバー上でデータフェッチ・レンダリング。`useEffect` / `useState` 不要
+- **Parallel Routes** — `@dependencies` / `@vulnerabilities` / `@summary` が独立して並列レンダリング
+- **Dynamic Routes** — `/analyze/[owner]/[repo]` で GitHub の owner/repo と 1 対 1 対応
+- **loading.tsx** — ファイルを置くだけで Suspense フォールバックが自動適用
+- **Route Handlers** — `api/analyze/route.ts` で REST API を提供（Server Actions は再利用性の観点から不使用）
+
+## セットアップ
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`.env.local` を編集：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+GITHUB_TOKEN=your_github_personal_access_token
+GOOGLE_GENERATIVE_AI_API_KEY=your_api_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`GITHUB_TOKEN` は [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens) から取得。
 
-## Learn More
+```bash
+npx prisma generate
+npx prisma db push
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+[http://localhost:3000](http://localhost:3000) を開いて GitHub リポジトリの URL を入力。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ディレクトリ構成
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── page.tsx                          # トップ（URL 入力フォーム）
+│   ├── layout.tsx
+│   ├── analyze/[owner]/[repo]/
+│   │   ├── layout.tsx                    # Parallel Routes レイアウト
+│   │   ├── page.tsx                      # リポジトリ情報ヘッダー
+│   │   ├── loading.tsx                   # Suspense フォールバック
+│   │   ├── @dependencies/page.tsx        # 依存関係セクション
+│   │   ├── @vulnerabilities/page.tsx     # 脆弱性セクション
+│   │   └── @summary/page.tsx            # AI サマリーセクション
+│   └── api/analyze/route.ts             # 分析 API（キャッシュ制御）
+├── lib/
+│   ├── github.ts                         # GitHub API クライアント
+│   ├── npm.ts                            # npm registry / advisory API
+│   ├── ai.ts                             # Vercel AI SDK
+│   └── db.ts                             # Prisma client
+├── components/                           # shadcn/ui コンポーネント
+└── types/index.ts                        # 型定義
+```

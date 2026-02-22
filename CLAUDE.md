@@ -380,7 +380,60 @@ OPENAI_API_KEY=   # または ANTHROPIC_API_KEY
 - GitHubのrate limitに注意（認証トークン使用で5000req/h）
 - `tree`は200件、`readme`は3000文字でクリップしてトークン数を制御
 
-## Workflow Orchestration
+## ワークフロー・オーケストレーション
+
+### 1. Plan Node Default
+- 3ステップ以上、または設計判断を含む非自明なタスクは必ずプランモードに入る
+- 問題が起きたら無理に進めず、すぐ停止して再プランする
+- ビルドだけでなく検証工程にもプランモードを使う
+- 曖昧さを減らすため、最初に詳細な仕様を書く
+
+### 2. サブエージェント戦略
+- メインのコンテキストを綺麗に保つため積極的にサブエージェントを使う
+- 調査・探索・並列分析はサブエージェントに任せる
+- 複雑な問題にはサブエージェントで計算資源を多く投下する
+- 1サブエージェント1タスクで集中実行
+
+### 3. 自己改善ループ
+- ユーザーから修正を受けたら必ず `tasks/lessons.md` にパターンを追記
+- 同じミスを防ぐルールを自分で作る
+- ミス率が下がるまで徹底的に改善を繰り返す
+- セッション開始時に関連プロジェクトの教訓を見直す
+
+### 4. 完了前の検証
+- 動作確認なしに完了扱いにしない
+- 必要に応じて main と変更差分を確認する
+- 「スタッフエンジニアが承認するか？」と自問する
+- テスト実行・ログ確認・正しさの証明を行う
+
+### 5. エレガンスの追求（バランス重視）
+- 重要な変更では「より美しい方法はないか？」と立ち止まる
+- ハックっぽい修正なら、最善の解決策を再実装する
+- 単純な修正では過度な設計をしない
+- 提出前に自分の仕事を疑う
+
+### 6. 自律的バグ修正
+- バグ報告を受けたら即修正する。手取り足取りは求めない
+- ログ・エラー・失敗テストを確認して解決する
+- ユーザーに文脈切替を要求しない
+- 指示がなくてもCIの失敗を直す
+
+## タスク管理
+
+1. **まず計画**: `tasks/todo.md` にチェック可能な計画を書く
+2. **計画確認**: 実装前に確認する
+3. **進捗管理**: 完了した項目を都度チェック
+4. **変更説明**: 各ステップで概要を説明
+5. **結果記録**: `tasks/todo.md` にレビューを追加
+6. **教訓蓄積**: 修正後は `tasks/lessons.md` を更新
+
+## コア原則
+
+- **シンプル第一**: 変更は可能な限り単純に。影響範囲は最小限に。
+- **怠らない**: 根本原因を解決する。応急処置は禁止。シニア水準。
+- **最小影響**: 必要な箇所だけ変更し、新たなバグを生まない。
+
+<!-- ## Workflow Orchestration
 
 ### 1. Plan Node Default
 - Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
@@ -431,4 +484,4 @@ OPENAI_API_KEY=   # または ANTHROPIC_API_KEY
 
 - **Simplicity First**: Make every change as simple as possible. Impact minimal code.
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
-- **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
+- **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs. -->

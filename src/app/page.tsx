@@ -27,7 +27,7 @@ export default function HomePage() {
 
     if (!match) {
       setError(
-        "Invalid format. Use a GitHub URL (https://github.com/owner/repo) or owner/repo."
+        "無効な形式です。GitHub URL（https://github.com/owner/repo）または owner/repo の形式で入力してください。"
       );
       return;
     }
@@ -40,10 +40,9 @@ export default function HomePage() {
     <main className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">RepoLens</CardTitle>
+          <CardTitle className="text-3xl font-bold">Repolens</CardTitle>
           <CardDescription>
-            Analyze GitHub repositories for dependency health, vulnerabilities,
-            and AI-powered insights.
+            GitHub リポジトリの依存関係・脆弱性を分析し、AIによるインサイトを提供します。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -55,7 +54,7 @@ export default function HomePage() {
             />
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" className="w-full">
-              Analyze
+              分析する
             </Button>
           </form>
         </CardContent>

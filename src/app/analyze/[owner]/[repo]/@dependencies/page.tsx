@@ -29,11 +29,11 @@ export default async function DependenciesPage({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Dependencies</CardTitle>
+          <CardTitle>依存関係</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            No package.json found in this repository.
+            このリポジトリに package.json が見つかりませんでした。
           </p>
         </CardContent>
       </Card>
@@ -46,9 +46,9 @@ export default async function DependenciesPage({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Dependencies</CardTitle>
+          <CardTitle>依存関係</CardTitle>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">Risk Score</p>
+            <p className="text-sm text-muted-foreground">リスクスコア</p>
             <p className="text-2xl font-bold">{analysis.riskScore}/100</p>
           </div>
         </div>

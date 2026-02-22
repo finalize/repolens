@@ -28,11 +28,11 @@ export default async function VulnerabilitiesPage({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Vulnerabilities</CardTitle>
+          <CardTitle>脆弱性</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            No package.json found — vulnerability scan skipped.
+            package.json が見つからないため、脆弱性スキャンをスキップしました。
           </p>
         </CardContent>
       </Card>
@@ -46,7 +46,7 @@ export default async function VulnerabilitiesPage({
     <Card>
       <CardHeader>
         <CardTitle>
-          Vulnerabilities
+          脆弱性
           {vulnerabilities.length > 0 && (
             <Badge variant="destructive" className="ml-2">
               {vulnerabilities.length}
@@ -57,7 +57,7 @@ export default async function VulnerabilitiesPage({
       <CardContent>
         {vulnerabilities.length === 0 ? (
           <p className="text-muted-foreground">
-            No known vulnerabilities detected.
+            既知の脆弱性は検出されませんでした。
           </p>
         ) : (
           <div className="space-y-2">
@@ -86,7 +86,7 @@ export default async function VulnerabilitiesPage({
                   rel="noopener noreferrer"
                   className="text-xs text-muted-foreground hover:underline"
                 >
-                  View advisory
+                  アドバイザリーを見る
                 </a>
               </div>
             ))}

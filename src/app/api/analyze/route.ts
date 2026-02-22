@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { fetchRepoContext } from "@/lib/github";
 import { analyzeDependencies } from "@/lib/npm";
-import { generateSummaryStream, parseSummaryText } from "@/lib/ai";
 
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -35,13 +34,7 @@ export async function POST(request: NextRequest) {
               riskScore: cached.dependencies.riskScore,
             }
           : null,
-        summary: cached.summary
-          ? {
-              overview: cached.summary.overview,
-              dependencySummary: cached.summary.dependencySummary,
-              riskSummary: cached.summary.riskSummary,
-            }
-          : null,
+        summary: null,
         cached: true,
       });
     }
@@ -53,14 +46,6 @@ export async function POST(request: NextRequest) {
     const depAnalysis = repoContext.packageJson
       ? await analyzeDependencies(repoContext.packageJson)
       : null;
-
-    // Generate AI summary
-    const summaryStream = generateSummaryStream(repoContext, depAnalysis);
-    let fullText = "";
-    for await (const chunk of (await summaryStream).textStream) {
-      fullText += chunk;
-    }
-    const summary = parseSummaryText(fullText);
 
     // Upsert to DB
     const repository = await prisma.repository.upsert({
@@ -87,26 +72,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Upsert summary
-    await prisma.summary.upsert({
-      where: { repositoryId: repository.id },
-      create: {
-        repositoryId: repository.id,
-        overview: summary.overview,
-        dependencySummary: summary.dependencySummary,
-        riskSummary: summary.riskSummary,
-      },
-      update: {
-        overview: summary.overview,
-        dependencySummary: summary.dependencySummary,
-        riskSummary: summary.riskSummary,
-      },
-    });
-
     return NextResponse.json({
       repository: repoContext,
       dependencies: depAnalysis,
-      summary,
+      summary: null,
       cached: false,
     });
   } catch (error) {

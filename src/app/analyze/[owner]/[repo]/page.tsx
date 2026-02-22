@@ -36,7 +36,7 @@ export default async function AnalyzePage({
             <CardDescription>{info.description}</CardDescription>
           </div>
           <Link href="/" className="text-sm text-muted-foreground hover:underline">
-            &larr; Back
+            &larr; 戻る
           </Link>
         </div>
       </CardHeader>

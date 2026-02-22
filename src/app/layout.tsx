@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RepoLens - GitHub Repository Analyzer",
+  title: "Repolens - GitHub リポジトリ分析ダッシュボード",
   description:
-    "Analyze GitHub repositories for dependency health, vulnerabilities, and AI-powered summaries.",
+    "GitHub リポジトリの依存関係・脆弱性を分析し、AIサマリーを生成します。",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

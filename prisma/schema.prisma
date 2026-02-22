@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Repository {
+  id         String   @id @default(cuid())
+  owner      String
+  repo       String
+  analyzedAt DateTime @default(now())
+
+  dependencies DependencyAnalysis?
+  summary      Summary?
+
+  @@unique([owner, repo])
+}
+
+model DependencyAnalysis {
+  id           String     @id @default(cuid())
+  repositoryId String     @unique
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+
+  packages        String // JSON: PackageInfo[]
+  vulnerabilities String // JSON: Vulnerability[]
+  riskScore       Int // 0-100
+
+  createdAt DateTime @default(now())
+}
+
+model Summary {
+  id           String     @id @default(cuid())
+  repositoryId String     @unique
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+
+  overview          String
+  dependencySummary String
+  riskSummary       String
+
+  createdAt DateTime @default(now())
+}
